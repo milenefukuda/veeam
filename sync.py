@@ -43,14 +43,18 @@ def setup_logger(log_file):
 
 logger = setup_logger("replica.log")
 
-def synchronize_folders(source_folder, replica_folder):
-    # Ensure replica folder exists
+
+def check_replica_folder(source_folder, replica_folder):
+    os.path.isfile(source_folder)
     if not os.path.exists(replica_folder):
-        os.makedirs(replica_folder)
+       os.makedirs(replica_folder)
+
+def synchronize_folders(source_folder, replica_folder):
+
 
     # Get list of files in source folder
     source_files = os.listdir(source_folder)
-
+    
     for file_name in source_files:
         source_path = os.path.join(source_folder, file_name)
         replica_path = os.path.join(replica_folder, file_name)
@@ -64,6 +68,7 @@ def synchronize_folders(source_folder, replica_folder):
                 shutil.copy2(source_path, replica_path)
                 logger.info(f"Copied {file_name} from '{source_folder}' to '{replica_folder}'")
 
+def delete_files(source_folder, replica_folder):
     # Remove files from replica that don't exist in source
     replica_files = os.listdir(replica_folder)
     for file_name in replica_files:
@@ -85,6 +90,7 @@ def hash_file(file_path):
             data = file.read(65536)  # 64 KB chunks
             if not data:
                 break
+        #    print(file_path, data)
             hasher.update(data)
     return hasher.hexdigest()
 
@@ -93,7 +99,11 @@ source_folder = "source"
 replica_folder = "replica"
 sync_interval_seconds = 1
 
-while True:
-    synchronize_folders(source_folder, replica_folder)
-    print("Synchronization complete")
-    time.sleep(sync_interval_seconds)
+def run():
+    while True :
+        synchronize_folders(source_folder, replica_folder)
+        print("Synchronization complete")
+        time.sleep(sync_interval_seconds)
+
+
+run()

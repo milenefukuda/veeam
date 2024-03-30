@@ -3,6 +3,7 @@ import shutil
 import hashlib
 import time
 import logging
+import sys
 
 # .1 criar teste unitário para função hash_file
 # .2 quebrar a funçao synchronize_folders em mais funçoes e escrever testes para elas
@@ -12,46 +13,54 @@ import logging
 # .4 adicionar logs ao console output
 
 def setup_logger(log_file):
+    print(f"alooo")
     # Create logger
     logger = logging.getLogger(__name__)
     logging.basicConfig(filename=log_file, encoding='utf-8', level=logging.DEBUG)
 
-    return logger
-
-    # logger.setLevel(logging.DEBUG)
-
-    # # Create console handler and set level to INFO
-    # console_handler = logging.StreamHandler()
-    # console_handler.setLevel(logging.INFO)
-
-    # # Create file handler and set level to DEBUG
-    # file_handler = logging.FileHandler(log_file)
-    # file_handler.setLevel(logging.DEBUG)
-
-    # # Create formatter
-    # formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-
-    # # Add formatter to handlers
-    # console_handler.setFormatter(formatter)
-    # file_handler.setFormatter(formatter)
-
-    # # Add handlers to logger
-    # logger.addHandler(console_handler)
-    # logger.addHandler(file_handler)
-
     # return logger
 
+    logger.setLevel(logging.DEBUG)
+
+    # # Create console handler and set level to INFO
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+
+    # # Create file handler and set level to DEBUG
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.DEBUG)
+
+    # # Create formatter
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
+    # # Add formatter to handlers
+    console_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+
+    # # Add handlers to logger
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
+print(f"aqui")
 logger = setup_logger("replica.log")
+print(f"ou aqui")
 
+#source_folder = ""
+#replica_folder = ""
+#argv = len(sys.argv)
 
-def check_replica_folder(source_folder, replica_folder):
-    os.path.isfile(source_folder)
-    if not os.path.exists(replica_folder):
-       os.makedirs(replica_folder)
+def check_folders_exists(source_folder, replica_folder):
+    print(f"parei aqui 00", replica_folder, source_folder)
+    if os.path.exists(source_folder) and os.path.exists(replica_folder):
+        return True
+    else:
+        return False
 
 def synchronize_folders(source_folder, replica_folder):
-
-
+    print(f"parei aqui 01")
+    print(check_folders_exists(source_folder, replica_folder))
+    if False == check_folders_exists(source_folder, replica_folder):
+        raise Exception("Source or Replica folder's missing, check given arguments") 
     # Get list of files in source folder
     source_files = os.listdir(source_folder)
     
@@ -68,7 +77,7 @@ def synchronize_folders(source_folder, replica_folder):
                 shutil.copy2(source_path, replica_path)
                 logger.info(f"Copied {file_name} from '{source_folder}' to '{replica_folder}'")
 
-def delete_files(source_folder, replica_folder):
+def delete_replica_files(source_folder, replica_folder):
     # Remove files from replica that don't exist in source
     replica_files = os.listdir(replica_folder)
     for file_name in replica_files:
@@ -97,13 +106,13 @@ def hash_file(file_path):
 # Example usage:
 source_folder = "source"
 replica_folder = "replica"
+argv = len(sys.argv)
 sync_interval_seconds = 1
 
 def run():
     while True :
         synchronize_folders(source_folder, replica_folder)
-        print("Synchronization complete")
+        print("cheguei até aqui", sys.argv[0])
         time.sleep(sync_interval_seconds)
-
 
 run()

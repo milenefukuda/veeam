@@ -1,6 +1,6 @@
 import unittest
 from sync import hash_file
-from sync import check_replica_folder
+from sync import check_replica_folder_exists
 from unittest.mock import patch, mock_open
 
 class TestHashFile(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestCheckReplicaFolder(unittest.TestCase):
 
         with patch("sync.open", mock_open(read_data=test_source_folder)) as mock_file:
             print("qqqq")
-            check_replica_folder(test_source_folder,test_replica_folder)
+            check_replica_folder_exists(test_replica_folder)
             self.assertEqual(test_source_folder, test_replica_folder)
 
 if __name__=='__main__':

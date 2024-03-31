@@ -1,0 +1,3 @@
+replica/*
+sync.log
+__pycache__

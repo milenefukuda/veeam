@@ -1,4 +1,4 @@
-Test Task
+## Test Task
 
 Please implement a program that synchronizes two folders: source and replica. The program should maintain a full, identical copy of source folder at replica folder. Solve the test task by writing a program in Python:
 
@@ -11,3 +11,8 @@ Please implement a program that synchronizes two folders: source and replica. Th
 - It is undesirable to use third-party libraries that implement folder synchronization;
 
 - It is allowed (and recommended) to use external libraries implementing other well-known algorithms. For example, there is no point in implementing yet another function that calculates MD5 if you need it for the task – it is perfectly acceptable to use a third-party (or built-in) library.
+
+## How to use It
+
+- Create `source` and `replica`folders (or inform them)
+- Run: `python3 sync.py <source> <replica> <interval seconds> `

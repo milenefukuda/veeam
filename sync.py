@@ -8,7 +8,7 @@ import sys
 def setup_logger(log_file):
     # Create logger
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename=log_file, encoding='utf-8', level=logging.DEBUG)
+    logging.basicConfig(filename=log_file, encoding="utf-8", level=logging.DEBUG)
     logger.setLevel(logging.DEBUG)
 
     # # Create console handler and set level to INFO
@@ -34,12 +34,12 @@ def setup_logger(log_file):
 
 def hash_file(file_path):
     hasher = hashlib.md5()
-    with open(file_path, 'rb') as file:
+    with open(file_path, "rb") as file:
         while True:
             data = file.read(65536)  # 64 KB chunks
             if not data:
                 break
-        #    print(file_path, data)
+            #    print(file_path, data)
             hasher.update(data)
     return hasher.hexdigest()
 
@@ -48,22 +48,17 @@ def check_arguments(args):
         print(f"Error: to sync please run: python3 sync.py <source folder> <replica folder> <interval in seconds>.")
         exit()
 
-    # verifica se a pasta source existe, caso contrário da erro e sai do sistema
     if check_folder_exists(args[1]) == False:
         print(f"Error: Invalid source folder.")
         exit()
 
-    # verifica se a pasta replica existe, caso contrário da erro e sai do sistema
     if check_folder_exists(args[2]) == False:
         print(f"Error: Invalid replica folder.")
         exit()
 
-    # verifica se o numero interval foi informado, caso contrário da erro e sai do sistema
     if not args[3].isdigit():
         print(f"Error: Invalid interval number.")
         exit()
-    # caso nenhuma das condicoes anteriores seja atendida, nao faz mais nada, 
-    # apenas devolve a execucao para a funcao anterior
 
 def check_folder_exists(folder):
     return os.path.exists(folder)
@@ -93,7 +88,7 @@ def synchronize_folders(source_folder, replica_folder, logger, modified=0):
 
     # Get list of files in source folder
     source_files = os.listdir(source_folder)
-    
+
     for file_name in source_files:
         source_path = os.path.join(source_folder, file_name)
         replica_path = os.path.join(replica_folder, file_name)
@@ -103,11 +98,15 @@ def synchronize_folders(source_folder, replica_folder, logger, modified=0):
             synchronize_folders(source_path, replica_path, logger, modified)
         else:
             # Copy file if it doesn't exist in replica folder or if it's different
-            if not os.path.exists(replica_path) or hash_file(source_path) != hash_file(replica_path):
+            if not os.path.exists(replica_path) or hash_file(source_path) != hash_file(
+                replica_path
+            ):
                 shutil.copy2(source_path, replica_path)
-                logger.info(f"Copied {file_name} from '{source_folder}' to '{replica_folder}'")
+                logger.info(
+                    f"Copied {file_name} from '{source_folder}' to '{replica_folder}'"
+                )
                 modified += 1
-    
+
     # Remove files from replica that don't exist in source
     modified = delete_replica_files(source_folder, replica_folder, logger, modified)
 
@@ -119,8 +118,8 @@ def run():
     replica_folder = sys.argv[2]
     sync_interval_seconds = int(sys.argv[3])
     logger = setup_logger("sync.log")
-    
-    while True :
+
+    while True:
         total_files = synchronize_folders(source_folder, replica_folder, logger)
 
         if total_files == 0:
@@ -129,4 +128,5 @@ def run():
             logger.info(f"All files are updated.")
         time.sleep(sync_interval_seconds)
 
-run()
+if __name__ == "__main__":
+    run()

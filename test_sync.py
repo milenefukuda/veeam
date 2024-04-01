@@ -1,7 +1,11 @@
 import unittest
+import os
+import shutil
+import logging
+from unittest.mock import patch, mock_open
+
 from sync import hash_file
 from sync import synchronize_folders
-from unittest.mock import patch, mock_open
 
 class TestSync(unittest.TestCase):
 
@@ -16,15 +20,23 @@ class TestSync(unittest.TestCase):
             expected_hash = '8d4718497ac6a3ab25a81238bfdc024b'
 
             self.assertEqual(calculated_hash, expected_hash)
-    
-    def test_synchronize_folders(self):
-        test_source_folder = "random content"
-        test_replica_folder = "random content"
 
-        with patch("sync.open", mock_open(read_data=test_source_folder)) as mock_file:
-            print("qqqq")
-            synchronize_folders(test_replica_folder)
-            self.assertEqual(test_source_folder, test_replica_folder)
+    def test_synchronize_folders(self):
+        logger = logging.getLogger(__name__)
+        source_dir = "source_test"
+        replica_dir = "replica_test"
+        test_source_file = source_dir + "/veeamcontent.txt"
+        test_replica_file = replica_dir + "/veeamcontent.txt"
+        os.makedirs(source_dir)
+        os.makedirs(replica_dir)
+
+        with open(test_source_file, 'w') as fp:
+            pass
+
+        synchronize_folders(source_dir, replica_dir, logger)
+        self.assertTrue(os.path.exists(test_replica_file))
+        self.addCleanup(shutil.rmtree, source_dir)
+        self.addCleanup(shutil.rmtree, replica_dir)
 
 if __name__=='__main__':
     unittest.main()
